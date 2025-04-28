@@ -49,11 +49,11 @@ public class Menu extends JFrame {
 		lblBankingSystem.setBounds(0, 69, 613, 59);
 		contentPane.add(lblBankingSystem);
 
+		FileIO.Read();
 
 		JButton btnDepositToAccount = new JButton("Deposit To Account");
 		btnDepositToAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileIO.Read();
 				if (!GUIForm.depositacc.isVisible()) {
 					GUIForm.depositacc.setVisible(true);
 				} else {
