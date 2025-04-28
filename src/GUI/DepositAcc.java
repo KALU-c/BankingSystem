@@ -73,8 +73,6 @@ public class DepositAcc extends JFrame implements Serializable {
 		JButton btnDeposit = new JButton("Deposit");
 		btnDeposit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// FileIO file=new FileIO();
-				// Bank bank =file.Read();
 				String aacountNum;
 				double amt;
 				aacountNum = textField.getText();
@@ -85,6 +83,7 @@ public class DepositAcc extends JFrame implements Serializable {
 
 
 						FileIO.bank.deposit(aacountNum, amt);
+						FileIO.Write();
 						JOptionPane.showMessageDialog(getComponent(0), "Deposit Successful");
 						dispose();
 

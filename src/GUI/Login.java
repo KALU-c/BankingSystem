@@ -72,6 +72,7 @@ public class Login {
 			public void actionPerformed(ActionEvent e) {
 				String user, pass;
 				textField.setText("admin");
+				textField_1.setText("admin");
 				user = "admin";
 				// user=textField.getText();
 				pass = textField_1.getText();

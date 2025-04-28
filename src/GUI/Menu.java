@@ -49,28 +49,11 @@ public class Menu extends JFrame {
 		lblBankingSystem.setBounds(0, 69, 613, 59);
 		contentPane.add(lblBankingSystem);
 
-		FileIO.Read();
-
-		// JButton btnAddAccount = new JButton("Add Account");
-		// btnAddAccount.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// if(!GUIForm.addaccount.isVisible())
-		// {
-		// GUIForm.addaccount.setVisible(true);
-		// }
-		// else
-		// {
-		// JOptionPane.showMessageDialog(getComponent(0), "Already Opened", "Warning", 0);
-		// }
-		//
-		// }
-		// });
-		// btnAddAccount.setBounds(217, 162, 194, 40);
-		// contentPane.add(btnAddAccount);
 
 		JButton btnDepositToAccount = new JButton("Deposit To Account");
 		btnDepositToAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				FileIO.Read();
 				if (!GUIForm.depositacc.isVisible()) {
 					GUIForm.depositacc.setVisible(true);
 				} else {
