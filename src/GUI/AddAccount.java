@@ -1,4 +1,5 @@
 package GUI;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -6,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -27,71 +29,63 @@ public class AddAccount extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
-		contentPane.setBackground(SystemColor.activeCaption);
+		contentPane.setBackground(new Color(229, 229, 229));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		JButton btnAddCurrentAccount = new JButton("Add Saving Account");
 		btnAddCurrentAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!GUIForm.addsavingsaccount.isVisible())
-				{
+				if (!GUIForm.addsavingsaccount.isVisible()) {
 					GUIForm.addsavingsaccount.setVisible(true);
-				}
-				else
-				{
+				} else {
 					JOptionPane.showMessageDialog(getComponent(0), "Already Opened", "Warning", 0);
 				}
-			
-				
+
+
 				dispose();
 			}
 		});
 		btnAddCurrentAccount.setBounds(118, 56, 193, 38);
 		contentPane.add(btnAddCurrentAccount);
-		
+
 		JButton button = new JButton("Add Current Account");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!GUIForm.addcurrentacc.isVisible())
-				{
+				if (!GUIForm.addcurrentacc.isVisible()) {
 					GUIForm.addcurrentacc.setVisible(true);
 					dispose();
-				}
-				else
-				{
+				} else {
 					JOptionPane.showMessageDialog(getComponent(0), "Already Opened", "Warning", 0);
 				}
-				
-				
+
+
 			}
 		});
 		button.setBounds(118, 124, 193, 38);
 		contentPane.add(button);
-		
+
 		JButton btnAddStudentAccount = new JButton("Add Student Account");
 		btnAddStudentAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!GUIForm.addstudentaccount.isVisible())
-				{
-					
+				if (!GUIForm.addstudentaccount.isVisible()) {
+
 					GUIForm.addstudentaccount.setVisible(true);
 					dispose();
 				}
-				
-				else
-				{
+
+				else {
 					JOptionPane.showMessageDialog(getComponent(0), "Already Opened", "Warning", 0);
 				}
-			
+
 			}
-			
-			
+
+
 		});
 		btnAddStudentAccount.setBounds(118, 190, 193, 38);
 		contentPane.add(btnAddStudentAccount);
-		
+
 		JLabel lblAddAccount = new JLabel("Add Account");
 		lblAddAccount.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblAddAccount.setHorizontalAlignment(SwingConstants.CENTER);
