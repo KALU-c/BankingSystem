@@ -26,7 +26,10 @@ public class BankAccount implements Serializable {
 		this.name = name;
 		this.balance = balance;
 		this.min_balance = min_balance;
-		this.acc_num = "1000" + (10000 + (int) (Math.random() * 89999) + "") + 2133;
+		// Only generate new account number if not set
+		if (this.acc_num == null) {
+			this.acc_num = "1000" + (10000 + (int) (Math.random() * 89999) + "") + 2133;
+		}
 	}
 
 
@@ -58,6 +61,10 @@ public class BankAccount implements Serializable {
 
 	public double getMinBalance() {
 		return min_balance;
+	}
+
+	public void setAccNum(String accNum) {
+		this.acc_num = accNum;
 	}
 
 	@Override
