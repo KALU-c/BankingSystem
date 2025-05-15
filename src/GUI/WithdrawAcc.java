@@ -85,6 +85,7 @@ public class WithdrawAcc extends JFrame implements Serializable {
 					if (a == 0) {
 
 						FileIO.bank.withdraw(aacountNum, amt);
+						FileIO.Write();
 						JOptionPane.showMessageDialog(getComponent(0), "Withdraw Successful");
 						dispose();
 					} else {

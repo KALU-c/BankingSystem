@@ -97,6 +97,7 @@ public class AddSavingsAccount extends JFrame {
 							try {
 								int index = FileIO.bank.addAccount(name, bal, maxw);
 								DisplayList.arr.addElement(FileIO.bank.getAccounts()[index].toString());
+								FileIO.Write();
 								JOptionPane.showMessageDialog(getComponent(0), "Added Successfully");
 								dispose();
 							} catch (Exception ex) {

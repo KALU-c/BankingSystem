@@ -80,8 +80,6 @@ public class DepositAcc extends JFrame implements Serializable {
 				int a = JOptionPane.showConfirmDialog(getComponent(0), "Confirm?");
 				if (a == 0) {
 					try {
-
-
 						FileIO.bank.deposit(aacountNum, amt);
 						FileIO.Write();
 						JOptionPane.showMessageDialog(getComponent(0), "Deposit Successful");
@@ -97,7 +95,6 @@ public class DepositAcc extends JFrame implements Serializable {
 						JOptionPane.showMessageDialog(getComponent(0), "Sorry! Account is Not Found");
 
 					} finally {
-						// file.Write(bank);
 						textField.setText(null);
 						textField_1.setText(null);
 					}

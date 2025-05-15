@@ -99,17 +99,16 @@ public class AddCurrentAccount extends JFrame {
 
 						int ch = JOptionPane.showConfirmDialog(getComponent(0), "Confirm?");
 						if (ch == 0) {
-							int index = 0;
 							try {
-								index = FileIO.bank.addAccount(name, bal, trlic);
-							} catch (Exception e1) {
+								int index = FileIO.bank.addAccount(name, bal, trlic);
+								DisplayList.arr.addElement(FileIO.bank.getAccounts()[index].toString());
+								FileIO.Write();
+								JOptionPane.showMessageDialog(getComponent(0), "Added Successfully");
+								dispose();
+							} catch (Exception ex) {
 								// TODO Auto-generated catch block
-								e1.printStackTrace();
+								ex.printStackTrace();
 							}
-							DisplayList.arr.addElement(FileIO.bank.getAccounts()[index].toString());
-							// file.Write(bank);
-							JOptionPane.showMessageDialog(getComponent(0), "Success");
-							dispose();
 						} else {
 							JOptionPane.showMessageDialog(getComponent(0), "Failed");
 							textField.setText(null);
