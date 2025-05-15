@@ -35,24 +35,31 @@ public class DatabaseIO {
   private static void createTables() {
     try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
         Statement stmt = conn.createStatement()) {
-      // Drop existing tables if they exist (to avoid foreign key issues)
-      stmt.execute("DROP TABLE IF EXISTS transactions");
-      stmt.execute("DROP TABLE IF EXISTS accounts");
+      // Create accounts table if it doesn't exist
+      stmt.execute("CREATE TABLE IF NOT EXISTS accounts (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
+                                                                                         // primary
+                                                                                         // key
+          "name VARCHAR(255), " + // Account holder's name
+          "balance DOUBLE PRECISION, " + // Current account balance
+          "min_balance DOUBLE PRECISION, " + // Minimum required balance
+          "acc_num VARCHAR(255) UNIQUE, " + // Unique account number
+          "type VARCHAR(50), " + // Account type (Savings/Current/Student)
+          "max_with_limit DOUBLE PRECISION, " + // Maximum withdrawal limit
+          "trade_license VARCHAR(255), " + // Trade license for business accounts
+          "institution_name VARCHAR(255))"); // Institution name for student accounts
 
-      // Create accounts table
-      stmt.execute("CREATE TABLE accounts (" + "id SERIAL PRIMARY KEY, " + "name VARCHAR(255), "
-          + "balance DOUBLE PRECISION, " + "min_balance DOUBLE PRECISION, "
-          + "acc_num VARCHAR(255) UNIQUE, " + "type VARCHAR(50), "
-          + "max_with_limit DOUBLE PRECISION, " + "trade_license VARCHAR(255), "
-          + "institution_name VARCHAR(255))");
+      // Create transactions table if it doesn't exist
+      stmt.execute("CREATE TABLE IF NOT EXISTS transactions (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
+                                                                                             // primary
+                                                                                             // key
+          "account_id INTEGER, " + // Foreign key to accounts table
+          "amount DOUBLE PRECISION, " + // Transaction amount
+          "type VARCHAR(50), " + // Transaction type (Deposit/Withdraw)
+          "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " + // Transaction timestamp
+          "FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE)"); // Cascading
+                                                                                  // delete
 
-      // Create transactions table
-      stmt.execute("CREATE TABLE transactions (" + "id SERIAL PRIMARY KEY, "
-          + "account_id INTEGER, " + "amount DOUBLE PRECISION, " + "type VARCHAR(50), "
-          + "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-          + "FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE)");
-
-      System.out.println("Database tables created successfully");
+      System.out.println("Database tables checked/created successfully");
     } catch (SQLException e) {
       System.err.println("Error creating tables: " + e.getMessage());
       e.printStackTrace();
@@ -61,26 +68,29 @@ public class DatabaseIO {
 
   public static void saveBank(Bank bank) {
     try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
-      conn.setAutoCommit(false);
+      conn.setAutoCommit(false); // Start transaction for data consistency
       try {
         // Save accounts
         for (BankAccount acc : bank.getAccounts()) {
           if (acc != null) {
-            // First check if account exists
+            // Check if account already exists in database
             String checkSql = "SELECT id FROM accounts WHERE acc_num = ?";
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
               checkStmt.setString(1, acc.acc_num);
               ResultSet rs = checkStmt.executeQuery();
 
               if (rs.next()) {
-                // Account exists, update it
+                // Account exists - update its information
                 String updateSql = "UPDATE accounts SET name = ?, balance = ?, min_balance = ?, "
                     + "type = ?, max_with_limit = ?, trade_license = ?, institution_name = ? "
                     + "WHERE acc_num = ?";
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                  // Set common fields for all account types
                   updateStmt.setString(1, acc.getName());
                   updateStmt.setDouble(2, acc.getbalance());
                   updateStmt.setDouble(3, acc.getMinBalance());
+
+                  // Set type-specific fields based on account type
                   if (acc instanceof SavingsAccount) {
                     updateStmt.setString(4, "Savings");
                     updateStmt.setDouble(5, ((SavingsAccount) acc).getMaxWithLimit());
@@ -101,14 +111,17 @@ public class DatabaseIO {
                   updateStmt.executeUpdate();
                 }
               } else {
-                // Account doesn't exist, insert it
+                // Account doesn't exist - create new account
                 String insertSql = "INSERT INTO accounts (name, balance, min_balance, acc_num, "
                     + "type, max_with_limit, trade_license, institution_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                  // Set common fields for all account types
                   insertStmt.setString(1, acc.getName());
                   insertStmt.setDouble(2, acc.getbalance());
                   insertStmt.setDouble(3, acc.getMinBalance());
                   insertStmt.setString(4, acc.acc_num);
+
+                  // Set type-specific fields based on account type
                   if (acc instanceof SavingsAccount) {
                     insertStmt.setString(5, "Savings");
                     insertStmt.setDouble(6, ((SavingsAccount) acc).getMaxWithLimit());
@@ -131,10 +144,10 @@ public class DatabaseIO {
             }
           }
         }
-        conn.commit();
+        conn.commit(); // Commit all changes
         System.out.println("Bank data saved successfully");
       } catch (SQLException e) {
-        conn.rollback();
+        conn.rollback(); // Rollback changes if any error occurs
         System.err.println("Error saving bank data: " + e.getMessage());
         e.printStackTrace();
       }
@@ -146,9 +159,9 @@ public class DatabaseIO {
 
   public static void saveTransaction(String accountNum, double amount, String type) {
     try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
-      conn.setAutoCommit(false); // Start transaction
+      conn.setAutoCommit(false); // Start transaction for data consistency
       try {
-        // First get the account ID
+        // First get the account ID using the account number
         String getAccountIdSql = "SELECT id FROM accounts WHERE acc_num = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(getAccountIdSql)) {
           pstmt.setString(1, accountNum);
@@ -158,7 +171,7 @@ public class DatabaseIO {
             System.out
                 .println("Found account ID: " + accountId + " for account number: " + accountNum);
 
-            // Insert the transaction
+            // Insert the transaction record
             String insertTransactionSql =
                 "INSERT INTO transactions (account_id, amount, type) VALUES (?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertTransactionSql)) {
@@ -178,7 +191,7 @@ public class DatabaseIO {
             throw new SQLException("Account not found: " + accountNum);
           }
         }
-        conn.commit(); // Commit transaction
+        conn.commit(); // Commit the transaction
         System.out.println("Transaction committed successfully");
       } catch (SQLException e) {
         conn.rollback(); // Rollback on error
