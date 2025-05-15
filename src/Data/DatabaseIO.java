@@ -93,6 +93,32 @@ public class DatabaseIO {
     }
   }
 
+  public static void saveTransaction(String accountNum, double amount, String type) {
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+      // First get the account ID
+      String getAccountIdSql = "SELECT id FROM accounts WHERE acc_num = ?";
+      try (PreparedStatement pstmt = conn.prepareStatement(getAccountIdSql)) {
+        pstmt.setString(1, accountNum);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+          int accountId = rs.getInt("id");
+
+          // Insert the transaction
+          String insertTransactionSql =
+              "INSERT INTO transactions (account_id, amount, type) VALUES (?, ?, ?)";
+          try (PreparedStatement insertStmt = conn.prepareStatement(insertTransactionSql)) {
+            insertStmt.setInt(1, accountId);
+            insertStmt.setDouble(2, amount);
+            insertStmt.setString(3, type);
+            insertStmt.executeUpdate();
+          }
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
   public static Bank loadBank() {
     Bank bank = new Bank();
     try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);

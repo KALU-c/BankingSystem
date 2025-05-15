@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.awt.event.ActionEvent;
 import Data.FileIO;
 import java.awt.SystemColor;
+import Data.DatabaseIO;
 
 public class DepositAcc extends JFrame implements Serializable {
 
@@ -81,7 +82,9 @@ public class DepositAcc extends JFrame implements Serializable {
 				if (a == 0) {
 					try {
 						FileIO.bank.deposit(aacountNum, amt);
+						DatabaseIO.saveTransaction(aacountNum, amt, "DEPOSIT");
 						FileIO.Write();
+						GUIForm.UpdateDisplay();
 						JOptionPane.showMessageDialog(getComponent(0), "Deposit Successful");
 						dispose();
 

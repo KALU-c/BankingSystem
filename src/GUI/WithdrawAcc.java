@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.awt.event.ActionEvent;
 import Data.FileIO;
 import java.awt.SystemColor;
+import Data.DatabaseIO;
 
 public class WithdrawAcc extends JFrame implements Serializable {
 
@@ -85,7 +86,9 @@ public class WithdrawAcc extends JFrame implements Serializable {
 					if (a == 0) {
 
 						FileIO.bank.withdraw(aacountNum, amt);
+						DatabaseIO.saveTransaction(aacountNum, amt, "WITHDRAW");
 						FileIO.Write();
+						GUIForm.UpdateDisplay();
 						JOptionPane.showMessageDialog(getComponent(0), "Withdraw Successful");
 						dispose();
 					} else {
