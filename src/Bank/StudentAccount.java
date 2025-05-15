@@ -14,6 +14,8 @@ public class StudentAccount extends SavingsAccount {
 		// this.type="Stuedent Account";
 	}
 
-
+	public String getInstitutionName() {
+		return institutionName;
+	}
 
 }

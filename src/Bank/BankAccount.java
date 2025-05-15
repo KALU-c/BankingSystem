@@ -52,6 +52,14 @@ public class BankAccount implements Serializable {
 		return balance;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public double getMinBalance() {
+		return min_balance;
+	}
+
 	@Override
 	public String toString() {
 		return "Name: " + name + ", Id: " + acc_num + ", Balance: " + balance + "Type:"

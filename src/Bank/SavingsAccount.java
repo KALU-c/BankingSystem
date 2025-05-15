@@ -24,6 +24,10 @@ public class SavingsAccount extends BankAccount {
 		return NetBalance;
 	}
 
+	public double getMaxWithLimit() {
+		return maxWithLimit;
+	}
+
 	public void withdraw(double amount) throws MaxWithdraw, MaxBalance {
 		if (amount < maxWithLimit) {
 			super.withdraw(amount);
