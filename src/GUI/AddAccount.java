@@ -50,7 +50,7 @@ public class AddAccount extends JFrame {
 		btnAddCurrentAccount.setBounds(118, 56, 193, 38);
 		contentPane.add(btnAddCurrentAccount);
 
-		JButton button = new JButton("Add Current Account");
+		JButton button = new JButton("Add Business Account");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!GUIForm.addcurrentacc.isVisible()) {
