@@ -35,14 +35,10 @@ public class DatabaseIO {
   private static void createTables() {
     try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
         Statement stmt = conn.createStatement()) {
-      // Drop existing tables if they exist
-      stmt.execute("DROP TABLE IF EXISTS transactions");
-      stmt.execute("DROP TABLE IF EXISTS accounts");
-
-      // Create accounts table
-      stmt.execute("CREATE TABLE accounts (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
-                                                                           // primary
-                                                                           // key
+      // Create accounts table if it doesn't exist
+      stmt.execute("CREATE TABLE IF NOT EXISTS accounts (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
+                                                                                         // primary
+                                                                                         // key
           "name VARCHAR(255), " + // Account holder's name
           "balance DOUBLE PRECISION, " + // Current account balance
           "min_balance DOUBLE PRECISION, " + // Minimum required balance
@@ -56,10 +52,10 @@ public class DatabaseIO {
           "address VARCHAR(255), " + // Address of account holder
           "phone_number VARCHAR(20))"); // Phone number of account holder
 
-      // Create transactions table
-      stmt.execute("CREATE TABLE transactions (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
-                                                                               // primary
-                                                                               // key
+      // Create transactions table if it doesn't exist
+      stmt.execute("CREATE TABLE IF NOT EXISTS transactions (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
+                                                                                             // primary
+                                                                                             // key
           "account_id INTEGER, " + // Foreign key to accounts table
           "amount DOUBLE PRECISION, " + // Transaction amount
           "type VARCHAR(50), " + // Transaction type (Deposit/Withdraw)
@@ -67,7 +63,7 @@ public class DatabaseIO {
           "FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE)"); // Cascading
                                                                                   // delete
 
-      System.out.println("Database tables recreated successfully");
+      System.out.println("Database tables checked/created successfully");
     } catch (SQLException e) {
       System.err.println("Error creating tables: " + e.getMessage());
       e.printStackTrace();
@@ -205,8 +201,7 @@ public class DatabaseIO {
                 .println("Found account ID: " + accountId + " for account number: " + accountNum);
 
             // Insert the transaction record
-            String insertTransactionSql =
-                "INSERT INTO transactions (account_id, amount, type) VALUES (?, ?, ?)";
+            String insertTransactionSql = "INSERT INTO transactions (account_id, amount, type) VALUES (?, ?, ?)";
             try (PreparedStatement insertStmt = conn.prepareStatement(insertTransactionSql)) {
               insertStmt.setInt(1, accountId);
               insertStmt.setDouble(2, amount);
@@ -259,8 +254,7 @@ public class DatabaseIO {
 
         BankAccount acc = null;
         if ("Savings".equals(type)) {
-          acc =
-              new SavingsAccount(name, balance, max_with_limit, age, gender, address, phone_number);
+          acc = new SavingsAccount(name, balance, max_with_limit, age, gender, address, phone_number);
         } else if ("Current".equals(type)) {
           acc = new CurrentAccount(name, balance, trade_license);
         } else if ("Student".equals(type)) {
