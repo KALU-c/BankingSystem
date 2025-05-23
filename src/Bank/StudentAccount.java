@@ -8,7 +8,7 @@ public class StudentAccount extends SavingsAccount {
 	String institutionName;
 
 	public StudentAccount(String name, double balance, String institutionName) throws Exception {
-		super(name, balance, 20000);
+		super(name, balance, 20000, 0, "", "", "");
 		min_balance = 100;
 		this.institutionName = institutionName;
 		// this.type="Stuedent Account";

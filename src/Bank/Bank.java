@@ -26,7 +26,14 @@ public class Bank implements Serializable {
 	}
 
 	public int addAccount(String name, double balance, double maxWithLimit) throws Exception {
-		SavingsAccount acc = new SavingsAccount(name, balance, maxWithLimit);
+		SavingsAccount acc = new SavingsAccount(name, balance, maxWithLimit, 0, "", "", "");
+		return this.addAccount(acc);
+	}
+
+	public int addAccount(String name, double balance, double maxWithLimit, int age, String gender,
+			String address, String phoneNumber) throws Exception {
+		SavingsAccount acc =
+				new SavingsAccount(name, balance, maxWithLimit, age, gender, address, phoneNumber);
 		return this.addAccount(acc);
 	}
 

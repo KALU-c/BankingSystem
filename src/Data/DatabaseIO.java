@@ -35,10 +35,14 @@ public class DatabaseIO {
   private static void createTables() {
     try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
         Statement stmt = conn.createStatement()) {
-      // Create accounts table if it doesn't exist
-      stmt.execute("CREATE TABLE IF NOT EXISTS accounts (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
-                                                                                         // primary
-                                                                                         // key
+      // Drop existing tables if they exist
+      stmt.execute("DROP TABLE IF EXISTS transactions");
+      stmt.execute("DROP TABLE IF EXISTS accounts");
+
+      // Create accounts table
+      stmt.execute("CREATE TABLE accounts (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
+                                                                           // primary
+                                                                           // key
           "name VARCHAR(255), " + // Account holder's name
           "balance DOUBLE PRECISION, " + // Current account balance
           "min_balance DOUBLE PRECISION, " + // Minimum required balance
@@ -46,12 +50,16 @@ public class DatabaseIO {
           "type VARCHAR(50), " + // Account type (Savings/Current/Student)
           "max_with_limit DOUBLE PRECISION, " + // Maximum withdrawal limit
           "trade_license VARCHAR(255), " + // Trade license for business accounts
-          "institution_name VARCHAR(255))"); // Institution name for student accounts
+          "institution_name VARCHAR(255), " + // Institution name for student accounts
+          "age INTEGER, " + // Age of account holder
+          "gender VARCHAR(10), " + // Gender of account holder
+          "address VARCHAR(255), " + // Address of account holder
+          "phone_number VARCHAR(20))"); // Phone number of account holder
 
-      // Create transactions table if it doesn't exist
-      stmt.execute("CREATE TABLE IF NOT EXISTS transactions (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
-                                                                                             // primary
-                                                                                             // key
+      // Create transactions table
+      stmt.execute("CREATE TABLE transactions (" + "id SERIAL PRIMARY KEY, " + // Auto-incrementing
+                                                                               // primary
+                                                                               // key
           "account_id INTEGER, " + // Foreign key to accounts table
           "amount DOUBLE PRECISION, " + // Transaction amount
           "type VARCHAR(50), " + // Transaction type (Deposit/Withdraw)
@@ -59,7 +67,7 @@ public class DatabaseIO {
           "FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE)"); // Cascading
                                                                                   // delete
 
-      System.out.println("Database tables checked/created successfully");
+      System.out.println("Database tables recreated successfully");
     } catch (SQLException e) {
       System.err.println("Error creating tables: " + e.getMessage());
       e.printStackTrace();
@@ -82,8 +90,8 @@ public class DatabaseIO {
               if (rs.next()) {
                 // Account exists - update its information
                 String updateSql = "UPDATE accounts SET name = ?, balance = ?, min_balance = ?, "
-                    + "type = ?, max_with_limit = ?, trade_license = ?, institution_name = ? "
-                    + "WHERE acc_num = ?";
+                    + "type = ?, max_with_limit = ?, trade_license = ?, institution_name = ?, "
+                    + "age = ?, gender = ?, address = ?, phone_number = ? " + "WHERE acc_num = ?";
                 try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                   // Set common fields for all account types
                   updateStmt.setString(1, acc.getName());
@@ -96,24 +104,37 @@ public class DatabaseIO {
                     updateStmt.setDouble(5, ((SavingsAccount) acc).getMaxWithLimit());
                     updateStmt.setString(6, null);
                     updateStmt.setString(7, null);
+                    updateStmt.setInt(8, ((SavingsAccount) acc).getAge());
+                    updateStmt.setString(9, ((SavingsAccount) acc).getGender());
+                    updateStmt.setString(10, ((SavingsAccount) acc).getAddress());
+                    updateStmt.setString(11, ((SavingsAccount) acc).getPhoneNumber());
                   } else if (acc instanceof CurrentAccount) {
                     updateStmt.setString(4, "Current");
                     updateStmt.setDouble(5, 0);
                     updateStmt.setString(6, ((CurrentAccount) acc).getTradeLicenseNumber());
                     updateStmt.setString(7, null);
+                    updateStmt.setInt(8, 0);
+                    updateStmt.setString(9, "");
+                    updateStmt.setString(10, "");
+                    updateStmt.setString(11, "");
                   } else if (acc instanceof StudentAccount) {
                     updateStmt.setString(4, "Student");
                     updateStmt.setDouble(5, ((StudentAccount) acc).getMaxWithLimit());
                     updateStmt.setString(6, null);
                     updateStmt.setString(7, ((StudentAccount) acc).getInstitutionName());
+                    updateStmt.setInt(8, 0);
+                    updateStmt.setString(9, "");
+                    updateStmt.setString(10, "");
+                    updateStmt.setString(11, "");
                   }
-                  updateStmt.setString(8, acc.acc_num);
+                  updateStmt.setString(12, acc.acc_num);
                   updateStmt.executeUpdate();
                 }
               } else {
                 // Account doesn't exist - create new account
                 String insertSql = "INSERT INTO accounts (name, balance, min_balance, acc_num, "
-                    + "type, max_with_limit, trade_license, institution_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "type, max_with_limit, trade_license, institution_name, "
+                    + "age, gender, address, phone_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                   // Set common fields for all account types
                   insertStmt.setString(1, acc.getName());
@@ -127,16 +148,28 @@ public class DatabaseIO {
                     insertStmt.setDouble(6, ((SavingsAccount) acc).getMaxWithLimit());
                     insertStmt.setString(7, null);
                     insertStmt.setString(8, null);
+                    insertStmt.setInt(9, ((SavingsAccount) acc).getAge());
+                    insertStmt.setString(10, ((SavingsAccount) acc).getGender());
+                    insertStmt.setString(11, ((SavingsAccount) acc).getAddress());
+                    insertStmt.setString(12, ((SavingsAccount) acc).getPhoneNumber());
                   } else if (acc instanceof CurrentAccount) {
                     insertStmt.setString(5, "Current");
                     insertStmt.setDouble(6, 0);
                     insertStmt.setString(7, ((CurrentAccount) acc).getTradeLicenseNumber());
                     insertStmt.setString(8, null);
+                    insertStmt.setInt(9, 0);
+                    insertStmt.setString(10, "");
+                    insertStmt.setString(11, "");
+                    insertStmt.setString(12, "");
                   } else if (acc instanceof StudentAccount) {
                     insertStmt.setString(5, "Student");
                     insertStmt.setDouble(6, ((StudentAccount) acc).getMaxWithLimit());
                     insertStmt.setString(7, null);
                     insertStmt.setString(8, ((StudentAccount) acc).getInstitutionName());
+                    insertStmt.setInt(9, 0);
+                    insertStmt.setString(10, "");
+                    insertStmt.setString(11, "");
+                    insertStmt.setString(12, "");
                   }
                   insertStmt.executeUpdate();
                 }
@@ -219,10 +252,15 @@ public class DatabaseIO {
         double max_with_limit = rs.getDouble("max_with_limit");
         String trade_license = rs.getString("trade_license");
         String institution_name = rs.getString("institution_name");
+        int age = rs.getInt("age");
+        String gender = rs.getString("gender");
+        String address = rs.getString("address");
+        String phone_number = rs.getString("phone_number");
 
         BankAccount acc = null;
         if ("Savings".equals(type)) {
-          acc = new SavingsAccount(name, balance, max_with_limit);
+          acc =
+              new SavingsAccount(name, balance, max_with_limit, age, gender, address, phone_number);
         } else if ("Current".equals(type)) {
           acc = new CurrentAccount(name, balance, trade_license);
         } else if ("Student".equals(type)) {
