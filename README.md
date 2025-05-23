@@ -7,7 +7,7 @@ A Java-based banking system that provides a graphical user interface for managin
 - **Multiple Account Types**
 
   - Savings Accounts
-  - Current Accounts
+  - Business Accounts
   - Student Accounts
 
 - **Account Management**
@@ -46,7 +46,7 @@ A Java-based banking system that provides a graphical user interface for managin
 1. Clone the repository:
 
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/KALU-c/BankingSystem.git
    ```
 
 2. Set up PostgreSQL:
@@ -74,7 +74,7 @@ javac -cp postgresql-42.7.5.jar src/Application.java src/Data/DatabaseIO.java sr
 Run the application using:
 
 ```bash
-java -cp "src:postgresql-42.7.5.jar" Application
+java -cp postgresql-42.7.5.jar Application
 ```
 
 ## Project Structure
@@ -157,7 +157,7 @@ CREATE TABLE transactions (
 - Maximum withdrawal limit
 - Interest calculation
 
-### Current Account
+### Business Account
 
 - Trade license requirement
 - No minimum balance

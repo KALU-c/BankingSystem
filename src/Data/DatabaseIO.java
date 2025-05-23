@@ -19,7 +19,7 @@ public class DatabaseIO {
   private static final String DB_URL = "jdbc:postgresql://localhost:5432/banking";
   private static final String USER = "postgres";
   private static final String PASS = "etr";
-  private static Bank bank = null;
+  // private static Bank bank = null;
 
   public static void initialize() {
     try {

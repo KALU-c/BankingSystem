@@ -72,11 +72,11 @@ public class Login {
 			public void actionPerformed(ActionEvent e) {
 				String user, pass;
 				textField.setText("admin");
-				textField_1.setText("admin");
+				// textField_1.setText("admin");
 				user = "admin";
 				// user=textField.getText();
 				pass = textField_1.getText();
-				if ((user.equals("admin") && (pass.equals("admin")))) {
+				if (((user == "admin") && (pass.equals("admin")))) {
 					JOptionPane.showMessageDialog(frame.getComponent(0), "Login Successfully");
 					frame.setVisible(false);
 
